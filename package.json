@@ -3,7 +3,11 @@
   "version": "0.0.1",
   "description": "Noah Defi Lending",
   "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
   "scripts": {
+    "flat": "truffle-flattener test/Import.flat > build/flat.sol",
     "prettier:solidity": "./node_modules/.bin/prettier --write contracts/**/*.sol",
     "solhint": "./node_modules/.bin/solhint -f table contracts/**/*.sol",
     "test": "truffle test"
@@ -12,23 +16,29 @@
     "type": "git",
     "url": "git+https://github.com/platinum-engineering/NoahLendingDefi.git"
   },
-  "keywords": [
-    "noahlendingdefi"
-  ],
-  "author": "Ivan Borisov",
-  "license": "MIT",
+  "author": "",
+  "license": "GPLv3",
   "bugs": {
     "url": "https://github.com/platinum-engineering/NoahLendingDefi/issues"
   },
   "homepage": "https://github.com/platinum-engineering/NoahLendingDefi#readme",
   "devDependencies": {
+    "@openzeppelin/test-environment": "^0.1.4",
+    "@truffle/debug-utils": "^4.1.5",
+    "@truffle/hdwallet-provider": "^1.0.35",
+    "chai": "^4.2.0",
+    "ganache-cli": "^6.9.1",
     "husky": "^5.0.9",
-    "prettier": "^1.19.1",
-    "prettier-plugin-solidity": "^1.0.0-beta.5",
+    "mocha": "^7.2.0",
+    "prettier": "^2.0.5",
+    "prettier-plugin-solidity": "^1.0.0-alpha.53",
     "solhint": "^3.3.2",
-    "solhint-plugin-prettier": "^0.0.5"
+    "solhint-plugin-prettier": "^0.0.5",
+    "truffle": "^5.1.28",
+    "truffle-flattener": "^1.4.4"
   },
   "dependencies": {
+    "@openzeppelin/contracts": "^3.0.1",
     "solc": "^0.8.1"
   }
 }
