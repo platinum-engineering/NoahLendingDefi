@@ -179,68 +179,135 @@ contract NoahLendToken {
         return true;
     }
 
-    
-    function _transferTokens(address src, address dst, uint96 amount) internal {
-        require(src != address(0), "NLT::_transferTokens: cannot transfer from the zero address");
-        require(dst != address(0), "NLT::_transferTokens: cannot transfer to the zero address");
+    function _transferTokens(
+        address src,
+        address dst,
+        uint96 amount
+    ) internal {
+        require(
+            src != address(0),
+            "NLT::_transferTokens: cannot transfer from the zero address"
+        );
+        require(
+            dst != address(0),
+            "NLT::_transferTokens: cannot transfer to the zero address"
+        );
 
-        balances[src] = sub96(balances[src], amount, "NLT::_transferTokens: transfer amount exceeds balance");
-        balances[dst] = add96(balances[dst], amount, "NLT::_transferTokens: transfer amount overflows");
+        balances[src] = sub96(
+            balances[src],
+            amount,
+            "NLT::_transferTokens: transfer amount exceeds balance"
+        );
+        balances[dst] = add96(
+            balances[dst],
+            amount,
+            "NLT::_transferTokens: transfer amount overflows"
+        );
         emit Transfer(src, dst, amount);
 
         _moveDelegates(delegates[src], delegates[dst], amount);
     }
 
-    function _moveDelegates(address srcRep, address dstRep, uint96 amount) internal {
+    function _moveDelegates(
+        address srcRep,
+        address dstRep,
+        uint96 amount
+    ) internal {
         if (srcRep != dstRep && amount > 0) {
             if (srcRep != address(0)) {
                 uint32 srcRepNum = numCheckpoints[srcRep];
-                uint96 srcRepOld = srcRepNum > 0 ? checkpoints[srcRep][srcRepNum - 1].votes : 0;
-                uint96 srcRepNew = sub96(srcRepOld, amount, "NLT::_moveVotes: vote amount underflows");
+                uint96 srcRepOld =
+                    srcRepNum > 0
+                        ? checkpoints[srcRep][srcRepNum - 1].votes
+                        : 0;
+                uint96 srcRepNew =
+                    sub96(
+                        srcRepOld,
+                        amount,
+                        "NLT::_moveVotes: vote amount underflows"
+                    );
                 _writeCheckpoint(srcRep, srcRepNum, srcRepOld, srcRepNew);
             }
 
             if (dstRep != address(0)) {
                 uint32 dstRepNum = numCheckpoints[dstRep];
-                uint96 dstRepOld = dstRepNum > 0 ? checkpoints[dstRep][dstRepNum - 1].votes : 0;
-                uint96 dstRepNew = add96(dstRepOld, amount, "NLT::_moveVotes: vote amount overflows");
+                uint96 dstRepOld =
+                    dstRepNum > 0
+                        ? checkpoints[dstRep][dstRepNum - 1].votes
+                        : 0;
+                uint96 dstRepNew =
+                    add96(
+                        dstRepOld,
+                        amount,
+                        "NLT::_moveVotes: vote amount overflows"
+                    );
                 _writeCheckpoint(dstRep, dstRepNum, dstRepOld, dstRepNew);
             }
         }
     }
 
-    function _writeCheckpoint(address delegatee, uint32 nCheckpoints, uint96 oldVotes, uint96 newVotes) internal {
-        uint32 blockNumber = safe32(block.number, "NLT::_writeCheckpoint: block number exceeds 32 bits");
+    function _writeCheckpoint(
+        address delegatee,
+        uint32 nCheckpoints,
+        uint96 oldVotes,
+        uint96 newVotes
+    ) internal {
+        uint32 blockNumber =
+            safe32(
+                block.number,
+                "NLT::_writeCheckpoint: block number exceeds 32 bits"
+            );
 
-        if (nCheckpoints > 0 && checkpoints[delegatee][nCheckpoints - 1].fromBlock == blockNumber) {
+        if (
+            nCheckpoints > 0 &&
+            checkpoints[delegatee][nCheckpoints - 1].fromBlock == blockNumber
+        ) {
             checkpoints[delegatee][nCheckpoints - 1].votes = newVotes;
         } else {
-            checkpoints[delegatee][nCheckpoints] = Checkpoint(blockNumber, newVotes);
+            checkpoints[delegatee][nCheckpoints] = Checkpoint(
+                blockNumber,
+                newVotes
+            );
             numCheckpoints[delegatee] = nCheckpoints + 1;
         }
 
         emit DelegateVotesChanged(delegatee, oldVotes, newVotes);
     }
 
-    function safe32(uint n, string memory errorMessage) internal pure returns (uint32) {
+    function safe32(uint256 n, string memory errorMessage)
+        internal
+        pure
+        returns (uint32)
+    {
         require(n < 2**32, errorMessage);
         return uint32(n);
     }
 
-    function safe96(uint n, string memory errorMessage) internal pure returns (uint96) {
+    function safe96(uint256 n, string memory errorMessage)
+        internal
+        pure
+        returns (uint96)
+    {
         require(n < 2**96, errorMessage);
         return uint96(n);
     }
 
-    function add96(uint96 a, uint96 b, string memory errorMessage) internal pure returns (uint96) {
+    function add96(
+        uint96 a,
+        uint96 b,
+        string memory errorMessage
+    ) internal pure returns (uint96) {
         uint96 c = a + b;
         require(c >= a, errorMessage);
         return c;
     }
 
-    function sub96(uint96 a, uint96 b, string memory errorMessage) internal pure returns (uint96) {
+    function sub96(
+        uint96 a,
+        uint96 b,
+        string memory errorMessage
+    ) internal pure returns (uint96) {
         require(b <= a, errorMessage);
         return a - b;
     }
-
 }
