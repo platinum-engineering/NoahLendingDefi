@@ -1,9 +1,3 @@
-/**
- *Submitted for verification at Etherscan.io on 2019-05-07
-*/
-
-// File: contracts/ErrorReporter.sol
-
 pragma solidity ^0.5.8;
 
 contract ComptrollerErrorReporter {
@@ -209,10 +203,6 @@ contract TokenErrorReporter {
     }
 }
 
-// File: contracts/ComptrollerInterface.sol
-
-pragma solidity ^0.5.8;
-
 interface ComptrollerInterface {
     /**
      * @notice Marker function used for light validation when updating the comptroller of a market
@@ -287,16 +277,6 @@ interface ComptrollerInterface {
         uint repayAmount) external view returns (uint, uint);
 }
 
-// File: contracts/CarefulMath.sol
-
-pragma solidity ^0.5.8;
-
-/**
-  * @title Careful Math
-  * @author Compound
-  * @notice Derived from OpenZeppelin's SafeMath library
-  *         https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/math/SafeMath.sol
-  */
 contract CarefulMath {
 
     /**
@@ -375,18 +355,6 @@ contract CarefulMath {
     }
 }
 
-// File: contracts/Exponential.sol
-
-pragma solidity ^0.5.8;
-
-
-/**
- * @title Exponential module for storing fixed-decision decimals
- * @author Compound
- * @notice Exp is a struct which stores decimals with a fixed precision of 18 decimal places.
- *         Thus, if we wanted to store the 5.1, mantissa would store 5.1e18. That is:
- *         `Exp({mantissa: 5100000000000000000})`.
- */
 contract Exponential is CarefulMath {
     uint constant expScale = 1e18;
     uint constant halfExpScale = expScale/2;
@@ -596,14 +564,6 @@ contract Exponential is CarefulMath {
     }
 }
 
-// File: contracts/EIP20Interface.sol
-
-pragma solidity ^0.5.8;
-
-/**
- * @title ERC 20 Token Standard Interface
- *  https://eips.ethereum.org/EIPS/eip-20
- */
 interface EIP20Interface {
 
     /**
@@ -658,15 +618,6 @@ interface EIP20Interface {
     event Approval(address indexed owner, address indexed spender, uint256 amount);
 }
 
-// File: contracts/EIP20NonStandardInterface.sol
-
-pragma solidity ^0.5.8;
-
-/**
- * @title EIP20NonStandardInterface
- * @dev Version of ERC20 with no return values for `transfer` and `transferFrom`
- *  See https://medium.com/coinmonks/missing-return-value-bug-at-least-130-tokens-affected-d67bf08521ca
- */
 interface EIP20NonStandardInterface {
 
     /**
@@ -731,16 +682,6 @@ interface EIP20NonStandardInterface {
     event Approval(address indexed owner, address indexed spender, uint256 amount);
 }
 
-// File: contracts/ReentrancyGuard.sol
-
-pragma solidity ^0.5.8;
-
-/**
- * @title Helps contracts guard against reentrancy attacks.
- * @author Remco Bloemen <remco@2π.com>, Eenae <alexey@mixbytes.io>
- * @dev If you mark a function `nonReentrant`, you should also
- * mark it `external`.
- */
 contract ReentrancyGuard {
     /// @dev counter to allow mutex lock with only one SSTORE operation
     uint256 private _guardCounter;
@@ -766,17 +707,6 @@ contract ReentrancyGuard {
     }
 }
 
-// File: contracts/InterestRateModel.sol
-
-pragma solidity ^0.5.8;
-
-/**
-  * @title The Compound InterestRateModel Interface
-  * @author Compound
-  * @notice Any interest rate model should derive from this contract.
-  * @dev These functions are specifically not marked `pure` as implementations of this
-  *      contract may read from storage variables.
-  */
 interface InterestRateModel {
     /**
       * @notice Gets the current borrow interest rate based on the given asset, total cash, total borrows
@@ -798,22 +728,6 @@ interface InterestRateModel {
     function isInterestRateModel() external view returns (bool);
 }
 
-// File: contracts/CToken.sol
-
-pragma solidity ^0.5.8;
-
-
-
-
-
-
-
-
-/**
- * @title Compound's CToken Contract
- * @notice Abstract base for CTokens
- * @author Compound
- */
 contract CToken is EIP20Interface, Exponential, TokenErrorReporter, ReentrancyGuard {
     /**
      * @notice Indicator that this is a CToken contract (for inspection)
@@ -2372,11 +2286,6 @@ contract CToken is EIP20Interface, Exponential, TokenErrorReporter, ReentrancyGu
     function doTransferOut(address payable to, uint amount) internal returns (Error);
 }
 
-// File: contracts/PriceOracle.sol
-
-pragma solidity ^0.5.8;
-
-
 interface PriceOracle {
     /**
      * @notice Indicator that this is a PriceOracle contract (for inspection)
@@ -2391,12 +2300,6 @@ interface PriceOracle {
       */
     function getUnderlyingPrice(CToken cToken) external view returns (uint);
 }
-
-// File: contracts/ComptrollerStorage.sol
-
-pragma solidity ^0.5.8;
-
-
 
 contract UnitrollerAdminStorage {
     /**
@@ -2449,17 +2352,6 @@ contract ComptrollerV1Storage is UnitrollerAdminStorage {
 
 }
 
-// File: contracts/Unitroller.sol
-
-pragma solidity ^0.5.8;
-
-
-/**
- * @title ComptrollerCore
- * @dev storage for the comptroller will be at this address, and
- * cTokens should reference this contract rather than a deployed implementation if
- *
- */
 contract Unitroller is UnitrollerAdminStorage, ComptrollerErrorReporter {
 
     /**

@@ -3,7 +3,7 @@
 
 ###BinanceSmartChain
 
-[ComptRoller](https://testnet.bscscan.com/address/0xbbfc0e8126c85540ae4c0669287a6f88ad7ebb14#code)	
+[ComptRoller](https://testnet.bscscan.com/address/0x0266bfaf493e8efae08cb08d3a10fb24793f1397#code)	
 
 [Comp Token](https://testnet.bscscan.com/address/0x7ae8d26d8e08ac8c8546b186cad0d68659fb4252#code)	
 
@@ -54,3 +54,17 @@
 [WhitePaperInterestRateModel](https://rinkeby.etherscan.io/address/0x68c12b7378a7abbeef46907b1982f383159cca45#code)
 
 [NoahPriceOracle](https://rinkeby.etherscan.io/address/0x0504210c132da5d4cdfb115bf04bfa13642497eb#code)
+
+priceOracle.addUnderlyingPrice*()
+
+comptroller.setCollateralFactorMantissa
+
+comptroller.setPriceOracle
+
+comptroller.supportMarket(cToken)
+
+comptroller.setLiquidationIncentiveMantissa()
+
+comptroller.setCollateralFactor()
+
+cToken.setReserveFActor()

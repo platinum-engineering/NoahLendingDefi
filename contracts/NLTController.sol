@@ -3164,7 +3164,7 @@ contract Unitroller is UnitrollerAdminStorage, ComptrollerErrorReporter {
     }
 }
 
-contract Comptroller is ComptrollerV5Storage, ComptrollerInterface, ComptrollerErrorReporter, ExponentialNoError {
+contract NLTController is ComptrollerV5Storage, ComptrollerInterface, ComptrollerErrorReporter, ExponentialNoError {
     /// @notice Emitted when an admin supports a market
     event MarketListed(CToken cToken);
 
