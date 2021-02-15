@@ -34,7 +34,7 @@
     "prettier-plugin-solidity": "^1.0.0-alpha.53",
     "solhint": "^3.3.2",
     "solhint-plugin-prettier": "^0.0.5",
-    "truffle": "^5.1.28",
+    "truffle": "^5.1.66",
     "truffle-flattener": "^1.4.4"
   },
   "dependencies": {

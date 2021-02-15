@@ -1,4 +1,5 @@
-pragma solidity ^0.4.24;
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.4.22 <0.9.0;
 
 library SafeMath {
     function mul(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
