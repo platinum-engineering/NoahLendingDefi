@@ -1,13 +1,3 @@
-/**
- *Submitted for verification at Etherscan.io on 2020-12-30
-*/
-
-/**
- *Submitted for verification at Etherscan.io on 2019-05-03
-*/
-
-// File: contracts/ComptrollerInterface.sol
-
 pragma solidity ^0.5.8;
 
 interface ComptrollerInterface {
@@ -83,10 +73,6 @@ interface ComptrollerInterface {
         address cTokenCollateral,
         uint repayAmount) external view returns (uint, uint);
 }
-
-// File: contracts/ErrorReporter.sol
-
-pragma solidity ^0.5.8;
 
 contract ComptrollerErrorReporter {
     enum Error {
@@ -291,9 +277,52 @@ contract TokenErrorReporter {
     }
 }
 
-// File: contracts/CarefulMath.sol
+contract OracleErrorReporter {
+    enum Error {
+        NO_ERROR,
+        UNAUTHORIZED,
+        FAILED_TO_SET_PRICE
+    }
 
-pragma solidity ^0.5.8;
+    enum FailureInfo {
+        ACCEPT_ANCHOR_ADMIN_PENDING_ANCHOR_ADMIN_CHECK,
+        SET_PAUSED_OWNER_CHECK,
+        SET_PENDING_ANCHOR_ADMIN_OWNER_CHECK,
+        SET_PENDING_ANCHOR_PERMISSION_CHECK,
+        SET_PRICE_CALCULATE_SWING,
+        SET_PRICE_CAP_TO_MAX,
+        SET_PRICE_MAX_SWING_CHECK,
+        SET_PRICE_NO_ANCHOR_PRICE_OR_INITIAL_PRICE_ZERO,
+        SET_PRICE_PERMISSION_CHECK,
+        SET_PRICE_ZERO_PRICE,
+        SET_PRICES_PARAM_VALIDATION
+    }
+
+    /**
+     * @dev `msgSender` is msg.sender; `error` corresponds to enum Error; `info` corresponds to enum OracleFailureInfo, and `detail` is an arbitrary
+     * contract-specific code that enables us to report opaque error codes from upgradeable contracts.
+     **/
+    event Failure(uint error, uint info, uint detail, address asset, address sender);
+
+    /**
+     * @dev use this when reporting a known error from the price oracle or a non-upgradeable collaborator
+     *      Using Oracle in name because we already inherit a `fail` function from ErrorReporter.sol via Exponential.sol
+     */
+    function failOracle(address asset, Error err, FailureInfo info) internal returns (uint) {
+        emit Failure(uint(err), uint(info), 0, asset, msg.sender);
+
+        return uint(err);
+    }
+
+    /**
+     * @dev Use this when reporting an error from the money market. Give the money market result as `details`
+     */
+    function failOracleWithDetails(address asset, Error err, FailureInfo info, uint details) internal returns (uint) {
+        emit Failure(uint(err), uint(info), details, asset, msg.sender);
+
+        return uint(err);
+    }
+}
 
 /**
   * @title Careful Math
@@ -378,11 +407,6 @@ contract CarefulMath {
         return subUInt(sum, c);
     }
 }
-
-// File: contracts/Exponential.sol
-
-pragma solidity ^0.5.8;
-
 
 /**
  * @title Exponential module for storing fixed-decision decimals
@@ -593,16 +617,19 @@ contract Exponential is CarefulMath {
     }
 
     /**
+     * @dev Checks if left Exp > right Exp.
+     */
+    function greaterThanExp(Exp memory left, Exp memory right) pure internal returns (bool) {
+        return left.mantissa > right.mantissa;
+    }
+
+    /**
      * @dev returns true if Exp is exactly zero
      */
     function isZeroExp(Exp memory value) pure internal returns (bool) {
         return value.mantissa == 0;
     }
 }
-
-// File: contracts/EIP20Interface.sol
-
-pragma solidity ^0.5.8;
 
 /**
  * @title ERC 20 Token Standard Interface
@@ -658,14 +685,9 @@ interface EIP20Interface {
       */
     function allowance(address owner, address spender) external view returns (uint256 remaining);
 
-    // XXX docs/verify
     event Transfer(address indexed from, address indexed to, uint256 amount);
     event Approval(address indexed owner, address indexed spender, uint256 amount);
 }
-
-// File: contracts/EIP20NonStandardInterface.sol
-
-pragma solidity ^0.5.8;
 
 /**
  * @title EIP20NonStandardInterface
@@ -736,10 +758,6 @@ interface EIP20NonStandardInterface {
     event Approval(address indexed owner, address indexed spender, uint256 amount);
 }
 
-// File: contracts/ReentrancyGuard.sol
-
-pragma solidity ^0.5.8;
-
 /**
  * @title Helps contracts guard against reentrancy attacks.
  * @author Remco Bloemen <remco@2π.com>, Eenae <alexey@mixbytes.io>
@@ -771,10 +789,6 @@ contract ReentrancyGuard {
     }
 }
 
-// File: contracts/InterestRateModel.sol
-
-pragma solidity ^0.5.8;
-
 /**
   * @title The Compound InterestRateModel Interface
   * @author Compound
@@ -788,9 +802,9 @@ interface InterestRateModel {
       *         and total reserves.
       * @dev The return value should be scaled by 1e18, thus a return value of
       *      `(true, 1000000000000)` implies an interest rate of 0.000001 or 0.0001% *per block*.
-      * @param cash The total cash of the underlying asset in the CToken
-      * @param borrows The total borrows of the underlying asset in the CToken
-      * @param reserves The total reserves of the underlying asset in the CToken
+      * @param cash The total cash of the underlying asset in the sToken
+      * @param borrows The total borrows of the underlying asset in the sToken
+      * @param reserves The total reserves of the underlying asset in the sToken
       * @return Success or failure and the borrow interest rate per block scaled by 10e18
       */
     function getBorrowRate(uint cash, uint borrows, uint reserves) external view returns (uint, uint);
@@ -803,25 +817,14 @@ interface InterestRateModel {
     function isInterestRateModel() external view returns (bool);
 }
 
-// File: contracts/CToken.sol
-
-pragma solidity ^0.5.8;
-
-
-
-
-
-
-
-
 /**
- * @title Compound's CToken Contract
- * @notice Abstract base for CTokens
+ * @title Compound's sToken Contract
+ * @notice Abstract base for sToken
  * @author Compound
  */
 contract CToken is EIP20Interface, Exponential, TokenErrorReporter, ReentrancyGuard {
     /**
-     * @notice Indicator that this is a CToken contract (for inspection)
+     * @notice Indicator that this is a sToken contract (for inspection)
      */
     bool public constant isCToken = true;
 
@@ -2376,11 +2379,6 @@ contract CToken is EIP20Interface, Exponential, TokenErrorReporter, ReentrancyGu
      */
     function doTransferOut(address payable to, uint amount) internal returns (Error);
 }
-
-// File: contracts/CErc20.sol
-
-pragma solidity ^0.5.8;
-
 
 /**
  * @title Compound's CErc20 Contract

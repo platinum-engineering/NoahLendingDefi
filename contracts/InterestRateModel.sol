@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.5.16;
+pragma solidity ^0.5.8;
 
 /**
   * @title Careful Math
-  * @author Compound
   * @notice Derived from OpenZeppelin's SafeMath library
   *         https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/math/SafeMath.sol
   */
@@ -85,9 +83,13 @@ contract CarefulMath {
     }
 }
 
+// File: contracts/Exponential.sol
+
+pragma solidity ^0.5.8;
+
+
 /**
  * @title Exponential module for storing fixed-decision decimals
- * @author Compound
  * @notice Exp is a struct which stores decimals with a fixed precision of 18 decimal places.
  *         Thus, if we wanted to store the 5.1, mantissa would store 5.1e18. That is:
  *         `Exp({mantissa: 5100000000000000000})`.
@@ -301,9 +303,12 @@ contract Exponential is CarefulMath {
     }
 }
 
+// File: contracts/InterestRateModel.sol
+
+pragma solidity ^0.5.8;
+
 /**
-  * @title The Compound InterestRateModel Interface
-  * @author Compound
+  * @title Th InterestRateModel Interface
   * @notice Any interest rate model should derive from this contract.
   * @dev These functions are specifically not marked `pure` as implementations of this
   *      contract may read from storage variables.
@@ -314,9 +319,9 @@ interface InterestRateModel {
       *         and total reserves.
       * @dev The return value should be scaled by 1e18, thus a return value of
       *      `(true, 1000000000000)` implies an interest rate of 0.000001 or 0.0001% *per block*.
-      * @param cash The total cash of the underlying asset in the CToken
-      * @param borrows The total borrows of the underlying asset in the CToken
-      * @param reserves The total reserves of the underlying asset in the CToken
+      * @param cash The total cash of the underlying asset in the SToken
+      * @param borrows The total borrows of the underlying asset in the SToken
+      * @param reserves The total reserves of the underlying asset in the SToken
       * @return Success or failure and the borrow interest rate per block scaled by 10e18
       */
     function getBorrowRate(uint cash, uint borrows, uint reserves) external view returns (uint, uint);
@@ -329,11 +334,10 @@ interface InterestRateModel {
     function isInterestRateModel() external view returns (bool);
 }
 
-/**
-  * @title The Compound Standard Interest Rate Model with pluggable constants
-  * @author Compound
-  * @notice See Section 2.4 of the Compound Whitepaper
-  */
+// File: contracts/WhitePaperInterestRateModel.sol
+
+pragma solidity ^0.5.8;
+
 contract WhitePaperInterestRateModel is InterestRateModel, Exponential {
     /**
      * @notice Indicator that this is an InterestRateModel contract (for inspection)
@@ -433,9 +437,9 @@ contract WhitePaperInterestRateModel is InterestRateModel, Exponential {
       *         and total reserves.
       * @dev The return value should be scaled by 1e18, thus a return value of
       *      `(true, 1000000000000)` implies an interest rate of 0.000001 or 0.0001% *per block*.
-      * @param cash The total cash of the underlying asset in the CToken
-      * @param borrows The total borrows of the underlying asset in the CToken
-      * @param _reserves The total reserves of the underlying asset in the CToken
+      * @param cash The total cash of the underlying asset in the SToken
+      * @param borrows The total borrows of the underlying asset in the SToken
+      * @param _reserves The total reserves of the underlying asset in the SToken
       * @return Success or failure and the borrow interest rate per block scaled by 10e18
       */
     function getBorrowRate(uint cash, uint borrows, uint _reserves) public view returns (uint, uint) {
